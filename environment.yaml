@@ -1,0 +1,16 @@
+name: annotate_frequency-env
+dependencies:
+  - zlib
+  - bzip2
+  - git
+# required for commitizen
+  - nodejs
+  - pre-commit
+  - cppcheck
+  - sarcasm::clang-format
+
+
+  - automake
+  - autoconf
+  - make>=4.2
+  - gxx_linux-64>=8.2.0
