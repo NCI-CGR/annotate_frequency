@@ -49,7 +49,7 @@ class freq_handler {
     if (_input) delete _input;
   }
   void initialize(const std::string &supercontinent) {
-    _input = fileinterface::reconcile_reader(_filename);
+    _input = annotate_frequency::reconcile_reader(_filename);
     std::string line = "", id = "";
     if (!_input->getline(&line))
       throw std::domain_error("no header available from file \"" + _filename +
@@ -82,7 +82,7 @@ class freq_handler {
 
  private:
   std::string _filename;
-  fileinterface::fileinterface_reader *_input;
+  annotate_frequency::finter_reader *_input;
   unsigned _chr;
   unsigned _pos;
   std::string _ref;
@@ -175,8 +175,8 @@ void process_file(const std::string &input_filename,
                   const std::string &freq_filename,
                   const std::string &supercontinent,
                   const std::string &output_filename) {
-  fileinterface::fileinterface_reader *input = 0;
-  fileinterface::fileinterface_writer *output = 0;
+  annotate_frequency::finter_reader *input = 0;
+  annotate_frequency::finter_writer *output = 0;
   freq_handler freq(freq_filename);
   freq.initialize(supercontinent);
   std::string line = "", id = "", a1 = "", a2 = "", catcher = "", n = "",
@@ -185,8 +185,8 @@ void process_file(const std::string &input_filename,
            unmapped_input = 0;
   double updated_freq = 0.0;
   try {
-    input = fileinterface::reconcile_reader(input_filename);
-    output = fileinterface::reconcile_writer(output_filename);
+    input = annotate_frequency::reconcile_reader(input_filename);
+    output = annotate_frequency::reconcile_writer(output_filename);
     input->getline(&line);
     output->writeline(line);
     while (input->getline(&line)) {
