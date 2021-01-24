@@ -8,4 +8,4 @@ Description: Annotate intermediate plco-analysis files with frequency data
 Requires: gcc >= 8.2.0
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir}
-Cflags: -I${includedir}/annotate_frequency-0.1.0 -I${libdir}/annotate_frequency-0.1.0/include
+Cflags: -I${includedir}/annotate_frequency-1.0.0 -I${libdir}/annotate_frequency-1.0.0/include
