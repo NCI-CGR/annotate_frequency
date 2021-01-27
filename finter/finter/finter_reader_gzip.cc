@@ -57,8 +57,7 @@ char annotate_frequency::finter_reader_gzip::get() {
 }
 
 bool annotate_frequency::finter_reader_gzip::getline(std::string *line) {
-  if (!line)
-    throw std::runtime_error("gzip_reader::getline: null pointer");
+  if (!line) throw std::runtime_error("gzip_reader::getline: null pointer");
   *line = "";
   while (true) {
     if (gzgets(_gz_input, _buf, _buf_max) == Z_NULL) {
@@ -74,7 +73,7 @@ bool annotate_frequency::finter_reader_gzip::getline(std::string *line) {
 }
 
 void annotate_frequency::finter_reader_gzip::read(char *buf,
-                                                        std::streamsize n) {
+                                                  std::streamsize n) {
   int my_errno = 0;
   if ((my_errno = gzread(_gz_input, reinterpret_cast<void *>(buf), n)) < 0) {
     throw std::domain_error(

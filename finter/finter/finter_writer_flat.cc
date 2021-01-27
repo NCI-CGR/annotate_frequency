@@ -22,6 +22,6 @@ void annotate_frequency::finter_writer_flat::writeline(
 }
 
 void annotate_frequency::finter_writer_flat::write(char *buf,
-                                                         std::streamsize n) {
+                                                   std::streamsize n) {
   _output.write(buf, n);
 }

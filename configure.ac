@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT(annotate_frequency, 1.0.0, palmercd@nih.gov)
+AC_INIT(annotate_frequency, 1.1.0, palmercd@nih.gov)
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects])
 AM_SILENT_RULES([yes])
@@ -35,7 +35,8 @@ AC_PROG_CXX_C_O
 AX_CXX_COMPILE_STDCXX_17([ext], [mandatory])
 
 # Checks for libraries.
-
+AX_BOOST_BASE([1.63.0])
+AX_BOOST_PROGRAM_OPTIONS
 AC_CHECK_LIB([m],[cos])
 
 # Checks for header files.
@@ -46,7 +47,7 @@ AC_CHECK_LIB([m],[cos])
 
 AC_CONFIG_FILES([
  Makefile
- annotate_frequency-1.0.0.pc
+ annotate_frequency-1.1.0.pc
 ])
 AC_CONFIG_SUBDIRS([finter])
 

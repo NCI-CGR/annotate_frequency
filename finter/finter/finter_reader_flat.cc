@@ -22,8 +22,7 @@ void annotate_frequency::finter_reader_flat::open(const char *filename) {
 }
 
 bool annotate_frequency::finter_reader_flat::getline(std::string *line) {
-  if (!line)
-    throw std::runtime_error("flat_reader::getline: null pointer");
+  if (!line) throw std::runtime_error("flat_reader::getline: null pointer");
   *line = "";
   if (_input.peek() == EOF) return false;
   std::getline(_input, *line);
@@ -31,6 +30,6 @@ bool annotate_frequency::finter_reader_flat::getline(std::string *line) {
 }
 
 void annotate_frequency::finter_reader_flat::read(char *buf,
-                                                        std::streamsize n) {
+                                                  std::streamsize n) {
   _input.read(buf, n);
 }

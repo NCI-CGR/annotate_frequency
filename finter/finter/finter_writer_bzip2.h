@@ -8,16 +8,13 @@
 #ifndef FINTER_FINTER_FINTER_WRITER_BZIP2_H_
 #define FINTER_FINTER_FINTER_WRITER_BZIP2_H_
 
-#include "finter/config.h"
-#ifdef FINTER_HAVE_LIBBZ2
-
-#include "finter/finter_writer_parent.h"
-
 #include <bzlib.h>
 #include <cstdio>
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
+#include "finter/config.h"
+#include "finter/finter_writer_parent.h"
 
 namespace annotate_frequency {
 /*!
@@ -94,7 +91,5 @@ class finter_writer_bzip2 : public finter_writer {
   BZFILE *_bz_output;  //!< bz2 library interface to underlying file pointer
 };
 }  // namespace annotate_frequency
-
-#endif  // FINTER_HAVE_LIBBZ2
 
 #endif  // FINTER_FINTER_FINTER_WRITER_BZIP2_H_
