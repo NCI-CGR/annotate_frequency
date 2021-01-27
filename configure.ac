@@ -35,7 +35,8 @@ AC_PROG_CXX_C_O
 AX_CXX_COMPILE_STDCXX_17([ext], [mandatory])
 
 # Checks for libraries.
-
+AX_BOOST_BASE([1.63.0])
+AX_BOOST_PROGRAM_OPTIONS
 AC_CHECK_LIB([m],[cos])
 
 # Checks for header files.
