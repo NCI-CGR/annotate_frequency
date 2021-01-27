@@ -156,6 +156,8 @@ bool freq_handler::align(unsigned chr, unsigned pos, const std::string &id) {
       }
       _freq.at(0) = freq;
       return true;
+    } else if (_input_metadata) {
+      _input->getline(&freqline);
     }
     if (next_chr == chr && next_pos == pos) {
       dup_position_failure = true;
