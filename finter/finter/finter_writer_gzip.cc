@@ -54,7 +54,7 @@ void annotate_frequency::finter_writer_gzip::writeline(
 }
 
 void annotate_frequency::finter_writer_gzip::write(char *buf,
-                                                         std::streamsize n) {
+                                                   std::streamsize n) {
   if (gzwrite(_gz_output, reinterpret_cast<void *>(buf), n) < 1) {
     throw std::domain_error(
         "annotate_frequency::finter_writer_gzip::write: write call of"

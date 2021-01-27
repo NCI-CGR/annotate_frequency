@@ -27,23 +27,11 @@ namespace annotate_frequency {
 inline finter_reader *reconcile_reader(const std::string &filename) {
   finter_reader *ptr = 0;
   if (filename.find(".gz") == filename.size() - 3) {
-#ifdef FINTER_HAVE_LIBZ
     ptr = new finter_reader_gzip;
     ptr->open(filename);
-#else
-    throw std::domain_error(
-        "zlib support not compiled into software, cannot open \"" + filename +
-        "\"");
-#endif  // FINTER_HAVE_LIBZ
   } else if (filename.find(".bz2") == filename.size() - 4) {
-#ifdef FINTER_HAVE_LIBBZ2
     ptr = new finter_reader_bzip2;
     ptr->open(filename);
-#else
-    throw std::domain_error(
-        "libbz2 support not compiled into software, cannot open \"" + filename +
-        "\"");
-#endif  // FINTER_HAVE_LIBBZ2
   } else {
     ptr = new finter_reader_flat;
     ptr->open(filename);
@@ -61,23 +49,11 @@ inline finter_reader *reconcile_reader(const std::string &filename) {
 inline finter_writer *reconcile_writer(const std::string &filename) {
   finter_writer *ptr = 0;
   if (filename.find(".gz") == filename.size() - 3) {
-#ifdef FINTER_HAVE_LIBZ
     ptr = new finter_writer_gzip;
     ptr->open(filename);
-#else
-    throw std::domain_error(
-        "zlib support not compiled into software, cannot write \"" + filename +
-        "\"");
-#endif  // FINTER_HAVE_LIBZ
   } else if (filename.find(".bz2") == filename.size() - 4) {
-#ifdef FINTER_HAVE_LIBBZ2
     ptr = new finter_writer_bzip2;
     ptr->open(filename);
-#else
-    throw std::domain_error(
-        "libbz2 support not compiled into software, cannot write \"" +
-        filename + "\"");
-#endif  // FINTER_HAVE_LIBBZ2
   } else {
     ptr = new finter_writer_flat;
     ptr->open(filename);

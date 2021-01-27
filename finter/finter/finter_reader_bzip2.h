@@ -8,15 +8,13 @@
 #ifndef FINTER_FINTER_FINTER_READER_BZIP2_H_
 #define FINTER_FINTER_FINTER_READER_BZIP2_H_
 
-#include "finter/config.h"
-#ifdef FINTER_HAVE_LIBBZ2
-#include "finter/finter_reader_parent.h"
-
 #include <bzlib.h>
 #include <cstdio>
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
+#include "finter/config.h"
+#include "finter/finter_reader_parent.h"
 
 namespace annotate_frequency {
 /*!
@@ -107,7 +105,5 @@ class finter_reader_bzip2 : public finter_reader {
   unsigned _buf_remaining;  //!< remaining space in read characters in buffer
 };
 }  // namespace annotate_frequency
-
-#endif  // FINTER_HAVE_LIBBZ2
 
 #endif  // FINTER_FINTER_FINTER_READER_BZIP2_H_

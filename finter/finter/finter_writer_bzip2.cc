@@ -7,8 +7,6 @@
 
 #include "finter/finter_writer_bzip2.h"
 
-#ifdef FINTER_HAVE_LIBBZ2
-
 void annotate_frequency::finter_writer_bzip2::open(const char *filename) {
   if (_raw_output)
     throw std::domain_error(
@@ -88,7 +86,7 @@ void annotate_frequency::finter_writer_bzip2::writeline(
 }
 
 void annotate_frequency::finter_writer_bzip2::write(char *buf,
-                                                          std::streamsize n) {
+                                                    std::streamsize n) {
   int error = 0;
   BZ2_bzWrite(&error, _bz_output, reinterpret_cast<void *>(buf),
               static_cast<int>(n));
@@ -100,5 +98,3 @@ void annotate_frequency::finter_writer_bzip2::write(char *buf,
         "write operation called on read handle");
   }
 }
-
-#endif  // HAVE_LIBBZ2

@@ -7,8 +7,6 @@
 
 #include "finter/finter_reader_bzip2.h"
 
-#ifdef FINTER_HAVE_LIBBZ2
-
 annotate_frequency::finter_reader_bzip2::finter_reader_bzip2()
     : finter_reader(),
       _raw_input(0),
@@ -84,8 +82,7 @@ char annotate_frequency::finter_reader_bzip2::get() {
 }
 
 bool annotate_frequency::finter_reader_bzip2::getline(std::string *res) {
-  if (!res)
-    throw std::runtime_error("bzip2_reader: null pointer");
+  if (!res) throw std::runtime_error("bzip2_reader: null pointer");
   bool retval = false;
   *res = "";
   std::string::size_type find_newline = 0, res_start = 0;
@@ -122,14 +119,12 @@ bool annotate_frequency::finter_reader_bzip2::getline(std::string *res) {
 
 bool annotate_frequency::finter_reader_bzip2::eof() const { return _eof; }
 
-bool annotate_frequency::finter_reader_bzip2::good() const {
-  return _good;
-}
+bool annotate_frequency::finter_reader_bzip2::good() const { return _good; }
 
 bool annotate_frequency::finter_reader_bzip2::bad() const { return _bad; }
 
 void annotate_frequency::finter_reader_bzip2::read(char *target,
-                                                         std::streamsize n) {
+                                                   std::streamsize n) {
   unsigned amount_read = 0;
   if (_buf_remaining) {
     for (; amount_read < _buf_remaining && amount_read < n; ++amount_read) {
@@ -186,5 +181,3 @@ void annotate_frequency::finter_reader_bzip2::refresh_buffer() {
     _fail = true;
   }
 }
-
-#endif  // HAVE_LIBBZ2
