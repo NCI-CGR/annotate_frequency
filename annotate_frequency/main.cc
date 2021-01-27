@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "annotate_frequency/cargs.h"
 #include "finter/finter.h"
 
 bool cicompare(const std::string &s1, const std::string &s2) {
@@ -29,50 +30,70 @@ class freq_handler {
  public:
   freq_handler()
       : _filename(""),
+        _metadata(""),
         _input(0),
+        _input_metadata(0),
         _chr(0),
         _pos(0),
         _ref(""),
         _target_index(0) {}
-  explicit freq_handler(const std::string &filename)
+  explicit freq_handler(const std::string &filename,
+                        const std::string &metadata)
       : _filename(filename),
+        _metadata(metadata),
         _input(0),
+        _input_metadata(0),
         _chr(0),
         _pos(0),
         _ref(""),
         _target_index(0) {}
   freq_handler(const freq_handler &obj)
-      : _filename(""), _input(0), _chr(0), _pos(0), _ref(""), _target_index(0) {
+      : _filename(""),
+        _metadata(""),
+        _input(0),
+        _input_metadata(0),
+        _chr(0),
+        _pos(0),
+        _ref(""),
+        _target_index(0) {
     throw std::domain_error("copy constructor not permitted");
   }
   ~freq_handler() throw() {
     if (_input) delete _input;
+    if (_input_metadata) delete _input_metadata;
   }
   void initialize(const std::string &supercontinent) {
     _input = annotate_frequency::reconcile_reader(_filename);
+    if (!_metadata.empty()) {
+      _input_metadata = annotate_frequency::reconcile_reader(_metadata);
+    }
     std::string line = "", id = "";
     if (!_input->getline(&line))
       throw std::domain_error("no header available from file \"" + _filename +
                               "\"");
-    std::istringstream strm1(line);
-    for (unsigned i = 0; i < 6; ++i) {
-      if (!(strm1 >> id))
-        throw std::domain_error("cannot parse header intro info");
-    }
-    unsigned counter = 1;
-    while (true) {
-      if (!(strm1 >> id)) {
-        break;
+    if (_metadata.empty()) {
+      std::istringstream strm1(line);
+      for (unsigned i = 0; i < 6; ++i) {
+        if (!(strm1 >> id))
+          throw std::domain_error("cannot parse header intro info");
       }
-      if (cicompare(id, supercontinent)) {
-        _target_index = counter + 6;
-        break;
+      unsigned counter = 1;
+      while (true) {
+        if (!(strm1 >> id)) {
+          break;
+        }
+        if (cicompare(id, supercontinent)) {
+          _target_index = counter + 6;
+          break;
+        }
+        ++counter;
       }
-      ++counter;
+      if (!_target_index)
+        throw std::domain_error("unable to locate header \"" + supercontinent +
+                                "\" from frequency file \"" + _filename + "\"");
+    } else {
+      _input_metadata->getline(&line);
     }
-    if (!_target_index)
-      throw std::domain_error("unable to locate header \"" + supercontinent +
-                              "\" from frequency file \"" + _filename + "\"");
   }
 
   bool align(unsigned chr, unsigned pos, const std::string &id);
@@ -82,7 +103,9 @@ class freq_handler {
 
  private:
   std::string _filename;
+  std::string _metadata;
   annotate_frequency::finter_reader *_input;
+  annotate_frequency::finter_reader *_input_metadata;
   unsigned _chr;
   unsigned _pos;
   std::string _ref;
@@ -92,13 +115,19 @@ class freq_handler {
 };
 
 bool freq_handler::align(unsigned chr, unsigned pos, const std::string &id) {
-  std::string line = "", catcher = "", ref = "", alt = "";
+  std::string line = "", freqline = "", catcher = "", ref = "", alt = "";
   unsigned next_chr = 0, next_pos = 0;
   double freq = 0.0;
   bool dup_position_failure = false;
   if (!_input) throw std::domain_error("align called on null input pointer");
+  if (!_metadata.empty() && !_input_metadata)
+    throw std::domain_error("align called on null metadata pointer");
   while (next_chr < chr || (next_chr == chr && next_pos <= pos)) {
-    if (!_input->getline(&line)) break;
+    if (_input_metadata) {
+      if (!_input_metadata->getline(&line)) break;
+    } else {
+      if (!_input->getline(&line)) break;
+    }
     std::istringstream strm1(line);
     if (!(strm1 >> catcher >> next_chr >> next_pos >> ref >> alt)) {
       throw std::domain_error("cannot parse frequency file \"" + _filename +
@@ -111,11 +140,19 @@ bool freq_handler::align(unsigned chr, unsigned pos, const std::string &id) {
       _alt.resize(1);
       _alt.at(0) = alt;
       _freq.resize(1);
-      strm1 >> catcher;
-      for (unsigned i = 6; i < _target_index; ++i) {
-        if (!(strm1 >> freq))
-          throw std::domain_error("cannot parse frequency from line \"" + line +
-                                  "\"");
+      if (_input_metadata) {
+        if (!_input->getline(&freqline)) break;
+        std::istringstream strm2(freqline);
+        if (!(strm2 >> freq))
+          throw std::domain_error("cannot parse frequency split file \"" +
+                                  _filename + "\" line \"" + freqline + "\"");
+      } else {
+        strm1 >> catcher;
+        for (unsigned i = 6; i < _target_index; ++i) {
+          if (!(strm1 >> freq))
+            throw std::domain_error("cannot parse frequency from line \"" +
+                                    line + "\"");
+        }
       }
       _freq.at(0) = freq;
       return true;
@@ -173,11 +210,12 @@ bool freq_handler::find(unsigned chr, unsigned pos, const std::string &id,
 
 void process_file(const std::string &input_filename,
                   const std::string &freq_filename,
+                  const std::string &freq_metadata,
                   const std::string &supercontinent,
                   const std::string &output_filename) {
   annotate_frequency::finter_reader *input = 0;
   annotate_frequency::finter_writer *output = 0;
-  freq_handler freq(freq_filename);
+  freq_handler freq(freq_filename, freq_metadata);
   freq.initialize(supercontinent);
   std::string line = "", id = "", a1 = "", a2 = "", catcher = "", n = "",
               beta = "", se = "", p = "";
@@ -234,18 +272,22 @@ void process_file(const std::string &input_filename,
 
 int main(int argc, char **argv) {
   try {
-    if (argc != 5) {
-      throw std::domain_error(
-          "usage: \"" + std::string(argv[0]) +
-          " input_filename freq_filename supercontinent output_filename\"");
+    // parse command line input
+    annotate_frequency::cargs ap(argc, argv);
+    // if help is requested or no flags specified
+    if (ap.help() || argc == 1) {
+      // print a help message and exist
+      ap.print_help(std::cout);
+      return 0;
     }
-    std::string input_filename = std::string(argv[1]);
-    std::string freq_filename = std::string(argv[2]);
-    std::string supercontinent = std::string(argv[3]);
-    std::string output_filename = std::string(argv[4]);
+    std::string input_filename = ap.get_input_filename();
+    std::string freq_filename = ap.get_frequency_filename();
+    std::string freq_metadata = ap.get_frequency_metadata_filename();
+    std::string supercontinent = ap.get_supercontinent();
+    std::string output_filename = ap.get_output_filename();
     std::cout << "starting processing of \"" << input_filename << "\" with \""
               << freq_filename << "\"" << std::endl;
-    process_file(input_filename, freq_filename, supercontinent,
+    process_file(input_filename, freq_filename, freq_metadata, supercontinent,
                  output_filename);
     std::cout << "all done: \"" << output_filename << "\"" << std::endl;
     return 0;
