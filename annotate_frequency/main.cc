@@ -104,8 +104,8 @@ class freq_handler {
  private:
   std::string _filename;
   std::string _metadata;
-  annotate_frequency::finter_reader *_input;
-  annotate_frequency::finter_reader *_input_metadata;
+  finter::finter_reader *_input;
+  finter::finter_reader *_input_metadata;
   unsigned _chr;
   unsigned _pos;
   std::string _ref;
@@ -215,8 +215,8 @@ void process_file(const std::string &input_filename,
                   const std::string &freq_metadata,
                   const std::string &supercontinent,
                   const std::string &output_filename) {
-  annotate_frequency::finter_reader *input = 0;
-  annotate_frequency::finter_writer *output = 0;
+  finter::finter_reader *input = 0;
+  finter::finter_writer *output = 0;
   freq_handler freq(freq_filename, freq_metadata);
   freq.initialize(supercontinent);
   std::string line = "", id = "", a1 = "", a2 = "", catcher = "", n = "",

@@ -49,6 +49,4 @@ AC_CONFIG_FILES([
  Makefile
  annotate_frequency-1.1.0.pc
 ])
-AC_CONFIG_SUBDIRS([finter])
-
 AC_OUTPUT
