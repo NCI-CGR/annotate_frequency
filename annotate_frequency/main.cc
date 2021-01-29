@@ -63,9 +63,9 @@ class freq_handler {
     if (_input_metadata) delete _input_metadata;
   }
   void initialize(const std::string &supercontinent) {
-    _input = annotate_frequency::reconcile_reader(_filename);
+    _input = finter::reconcile_reader(_filename);
     if (!_metadata.empty()) {
-      _input_metadata = annotate_frequency::reconcile_reader(_metadata);
+      _input_metadata = finter::reconcile_reader(_metadata);
     }
     std::string line = "", id = "";
     if (!_input->getline(&line))
@@ -225,8 +225,8 @@ void process_file(const std::string &input_filename,
            unmapped_input = 0;
   double updated_freq = 0.0;
   try {
-    input = annotate_frequency::reconcile_reader(input_filename);
-    output = annotate_frequency::reconcile_writer(output_filename);
+    input = finter::reconcile_reader(input_filename);
+    output = finter::reconcile_writer(output_filename);
     input->getline(&line);
     output->writeline(line);
     while (input->getline(&line)) {
