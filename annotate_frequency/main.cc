@@ -33,7 +33,7 @@ class freq_handler {
         _metadata(""),
         _input(0),
         _input_metadata(0),
-        _chr(0),
+        _chr(""),
         _pos(0),
         _ref(""),
         _target_index(0) {}
@@ -43,7 +43,7 @@ class freq_handler {
         _metadata(metadata),
         _input(0),
         _input_metadata(0),
-        _chr(0),
+        _chr(""),
         _pos(0),
         _ref(""),
         _target_index(0) {}
@@ -52,7 +52,7 @@ class freq_handler {
         _metadata(""),
         _input(0),
         _input_metadata(0),
-        _chr(0),
+        _chr(""),
         _pos(0),
         _ref(""),
         _target_index(0) {
@@ -96,9 +96,9 @@ class freq_handler {
     }
   }
 
-  bool align(unsigned chr, unsigned pos, const std::string &id);
+  bool align(const std::string &chr, unsigned pos, const std::string &id);
 
-  bool find(unsigned chr, unsigned pos, const std::string &id,
+  bool find(const std::string &chr, unsigned pos, const std::string &id,
             const std::string &a1, const std::string &a2, double *freq);
 
  private:
@@ -106,7 +106,7 @@ class freq_handler {
   std::string _metadata;
   finter::finter_reader *_input;
   finter::finter_reader *_input_metadata;
-  unsigned _chr;
+  std::string _chr;
   unsigned _pos;
   std::string _ref;
   std::vector<std::string> _alt;
@@ -114,15 +114,16 @@ class freq_handler {
   unsigned _target_index;
 };
 
-bool freq_handler::align(unsigned chr, unsigned pos, const std::string &id) {
-  std::string line = "", freqline = "", catcher = "", ref = "", alt = "";
-  unsigned next_chr = 0, next_pos = 0;
+bool freq_handler::align(const std::string &chr, unsigned pos, const std::string &id) {
+  std::string line = "", freqline = "", catcher = "", ref = "", alt = "";  
+  std::string next_chr = "";
+  unsigned next_pos = 0;
   double freq = 0.0;
   bool dup_position_failure = false;
   if (!_input) throw std::domain_error("align called on null input pointer");
   if (!_metadata.empty() && !_input_metadata)
     throw std::domain_error("align called on null metadata pointer");
-  while (next_chr < chr || (next_chr == chr && next_pos <= pos)) {
+  while (next_chr < chr || (next_chr.compare(chr) == 0 && next_pos <= pos)) {
     if (_input_metadata) {
       if (!_input_metadata->getline(&line)) break;
     } else {
@@ -159,7 +160,7 @@ bool freq_handler::align(unsigned chr, unsigned pos, const std::string &id) {
     } else if (_input_metadata) {
       _input->getline(&freqline);
     }
-    if (next_chr == chr && next_pos == pos) {
+    if (next_chr.compare(chr) == 0 && next_pos == pos) {
       dup_position_failure = true;
     }
   }
@@ -184,7 +185,7 @@ bool freq_handler::align(unsigned chr, unsigned pos, const std::string &id) {
   return false;
 }
 
-bool freq_handler::find(unsigned chr, unsigned pos, const std::string &id,
+bool freq_handler::find(const std::string &chr, unsigned pos, const std::string &id,
                         const std::string &a1, const std::string &a2,
                         double *freq) {
   if (!freq)
@@ -221,7 +222,8 @@ void process_file(const std::string &input_filename,
   freq.initialize(supercontinent);
   std::string line = "", id = "", a1 = "", a2 = "", catcher = "", n = "",
               beta = "", se = "", p = "";
-  unsigned chr = 0, pos = 0, total_input = 0, mapped_input = 0,
+  std::string chr = "";  
+  unsigned pos = 0, total_input = 0, mapped_input = 0,
            unmapped_input = 0;
   double updated_freq = 0.0;
   try {
