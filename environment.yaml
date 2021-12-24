@@ -4,6 +4,7 @@ dependencies:
   - bzip2
   - git
   - boost
+  - finter
 # required for commitizen
   - nodejs
   - pre-commit
